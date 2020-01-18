@@ -1,0 +1,41 @@
+#!/bin/bash
+
+set -x
+
+url="https://server.rsmaxwell.co.uk/archiva/repository"
+
+groupId="com.rsmaxwell.extractor"
+artifactId="extractor"
+packaging="jar"
+
+#*****************************************************************
+# Remove previously built jars
+#*****************************************************************
+rm -rf ./target/${artifactId}-*
+result=$?
+if [ ! $result == 0 ]; then
+    echo "$0[${LINENO}]"
+    echo "result = $result"
+    exit 1
+fi
+
+#*****************************************************************
+# Replace tags in the source for the Version class
+#*****************************************************************
+TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+    
+find . -name "Version.java" | while read versionfile; do
+
+    echo "Replacing tags in ${versionfile}"
+    
+    sed -i "s@<EXTRACTOR_VERSION>@${BUILD_ID}@g" ${versionfile}
+    sed -i "s@<BUILD_DATE>@${TIMESTAMP}@g"       ${versionfile}
+    sed -i "s@<GIT_COMMIT>@${GIT_COMMIT}@g"      ${versionfile}
+    sed -i "s@<GIT_BRANCH>@${GIT_BRANCH}@g"      ${versionfile}
+    sed -i "s@<GIT_URL>@${GIT_URL}@g"            ${versionfile}
+done
+
+#*****************************************************************
+# Update the version 
+#*****************************************************************
+mvn versions:set -DnewVersion=${BUILD_ID}
