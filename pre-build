@@ -4,8 +4,8 @@ set -x
 
 url="https://server.rsmaxwell.co.uk/archiva/repository"
 
-groupId="com.rsmaxwell.extractor"
-artifactId="extractor"
+groupId="com.rsmaxwell.generator"
+artifactId="generator"
 packaging="jar"
 
 #*****************************************************************
@@ -28,7 +28,7 @@ find . -name "Version.java" | while read versionfile; do
 
     echo "Replacing tags in ${versionfile}"
     
-    sed -i "s@<EXTRACTOR_VERSION>@${BUILD_ID}@g" ${versionfile}
+    sed -i "s@<GENERATOR_VERSION>@${BUILD_ID}@g" ${versionfile}
     sed -i "s@<BUILD_DATE>@${TIMESTAMP}@g"       ${versionfile}
     sed -i "s@<GIT_COMMIT>@${GIT_COMMIT}@g"      ${versionfile}
     sed -i "s@<GIT_BRANCH>@${GIT_BRANCH}@g"      ${versionfile}
