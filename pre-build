@@ -13,7 +13,7 @@ fi
 #*****************************************************************
 # Clean previously built jars
 #*****************************************************************
-rm -rf ./target/generator-*.jar
+rm -rf ./target/generator-*.jar /tmp/latest* /tmp/diary*
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]" 
@@ -24,7 +24,7 @@ fi
 #*****************************************************************
 # Find the latest version of 'diaryjson'
 #*****************************************************************
-tempdir=$(mktemp -d -t "latest-XXXXXXXXXXXX")
+tempdir=$(mktemp -d -t "diary-XXXXXXXXXXXX")
 result=$?
 if [ ! $result == 0 ]; then
     echo "$0[${LINENO}]"
