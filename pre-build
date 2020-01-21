@@ -2,33 +2,29 @@
 
 set -x
 
-url="https://server.rsmaxwell.co.uk/archiva/repository"
-
-groupId="com.rsmaxwell.generator"
-artifactId="generator"
-packaging="jar"
-
 #*****************************************************************
 # Remove previously built jars
 #*****************************************************************
-rm -rf ./target/${artifactId}-*
+rm -rf ./target/generator-*.jar
 result=$?
-if [ ! $result == 0 ]; then
-    echo "$0[${LINENO}]"
-    echo "result = $result"
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]" 
+    echo "result = ${result}"
     exit 1
 fi
 
 #*****************************************************************
 # Replace tags in the source for the Version class
 #*****************************************************************
+VERSION="0.0.$((${BUILD_ID}-2))"
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
     
 find . -name "Version.java" | while read versionfile; do
 
     echo "Replacing tags in ${versionfile}"
-    
-    sed -i "s@<GENERATOR_VERSION>@${BUILD_ID}@g" ${versionfile}
+
+    sed -i "s@<VERSION>@${VERSION}@g"            ${versionfile}    
+    sed -i "s@<BUILD_ID>@${BUILD_ID}@g"          ${versionfile}
     sed -i "s@<BUILD_DATE>@${TIMESTAMP}@g"       ${versionfile}
     sed -i "s@<GIT_COMMIT>@${GIT_COMMIT}@g"      ${versionfile}
     sed -i "s@<GIT_BRANCH>@${GIT_BRANCH}@g"      ${versionfile}
@@ -36,6 +32,15 @@ find . -name "Version.java" | while read versionfile; do
 done
 
 #*****************************************************************
-# Update the version 
+# Update the version in the pom file
 #*****************************************************************
-mvn versions:set -DnewVersion=${BUILD_ID}
+mvn --batch-mode --log-file output.txt versions:set -DnewVersion=${VERSION}
+result=$?
+if [ ! ${result} == 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "----[ output.txt ]--------------------------"
+    cat output.txt
+    echo "----------------------------------------"
+    exit 1
+fi
