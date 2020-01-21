@@ -2,14 +2,120 @@
 
 set -x
 
+cd ${tempdir}
+result=$?
+if [ ! $result == 0 ]; then
+    echo "$0[${LINENO}]"
+    echo "result = $result"
+    exit 1
+fi
+
 #*****************************************************************
-# Remove previously built jars
+# Clean previously built jars
 #*****************************************************************
 rm -rf ./target/generator-*.jar
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]" 
     echo "result = ${result}"
+    exit 1
+fi
+
+#*****************************************************************
+# Find the latest version of 'diaryjson'
+#*****************************************************************
+currentdir=$(pwd)
+result=$?
+if [ ! $result == 0 ]; then
+    echo "$0[${LINENO}]"
+    echo "result = $result"
+    exit 1
+fi
+
+tempdir=$(mktemp -d -t "latest-XXXXXXXXXXXX")
+result=$?
+if [ ! $result == 0 ]; then
+    echo "$0[${LINENO}]"
+    echo "result = $result"
+    exit 1
+fi
+
+cat << EOT > pom.xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>junk</groupId>
+	<artifactId>junk</artifactId>
+	<version>junk</version>
+
+	<dependencies>
+		<dependency>
+			<groupId>${groupId}</groupId>
+			<artifactId>${diaryjson_artifactId}</artifactId>
+			<version>0.0.0</version>
+		</dependency>
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>internal</id>
+			<url>https://server.rsmaxwell.co.uk/archiva/repository/releases</url>
+			<releases>
+				<updatePolicy>always</updatePolicy>
+			</releases>
+		</repository>
+	</repositories>
+
+</project>
+EOT
+
+mvn --batch-mode --log-file output.txt versions:use-latest-releases
+result=$?
+if [ ! ${result} == 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "----[ output.txt ]--------------------------"
+    cat output.txt
+    echo "----------------------------------------"
+    exit 1
+fi
+
+while [ ! -f pom.xml ]; do sleep 1; done
+
+echo "---[ pom.xml ]---------------------------------"
+cat pom.xml
+echo "-----------------------------------------------"
+
+line=$(grep "<version>" pom.xml | head -n 2 | tail -n 1)
+if [ ${#line} == 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    exit 1
+fi
+
+regex="<version>(.*)</version>"
+if [[ ! ${line} =~ ${regex} ]]; then
+    echo "Error: $0[${LINENO}]"
+    exit 1
+fi
+
+diaryjson_version="${BASH_REMATCH[1]}"
+echo "diaryjson_version: ${diaryjson_version}"
+
+cd ${currentdir}
+result=$?
+if [ ! $result == 0 ]; then
+    echo "$0[${LINENO}]"
+    echo "result = $result"
+    exit 1
+fi
+
+rm -rf ${tempdir}
+result=$?
+if [ ! $result == 0 ]; then
+    echo "$0[${LINENO}]"
+    echo "result = $result"
     exit 1
 fi
 
@@ -35,6 +141,20 @@ done
 # Update the version in the pom file
 #*****************************************************************
 mvn --batch-mode --log-file output.txt versions:set -DnewVersion=${VERSION}
+result=$?
+if [ ! ${result} == 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "----[ output.txt ]--------------------------"
+    cat output.txt
+    echo "----------------------------------------"
+    exit 1
+fi
+
+#*****************************************************************
+# Update the dependency versions in the pom file
+#*****************************************************************
+mvn --batch-mode --log-file output.txt versions:use-dep-version -DdepVersion=${diaryjson_version} -Dincludes=com.rsmaxwell.diary:diaryjson
 result=$?
 if [ ! ${result} == 0 ]; then
     echo "Error: $0[${LINENO}]"
