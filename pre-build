@@ -43,7 +43,7 @@ fi
 groupId="com.rsmaxwell.diary"
 diaryjson_artifactId="diaryjson"
 
-cat -n << EOT > pom.xml
+cat << EOT > pom.xml
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -88,7 +88,7 @@ fi
 while [ ! -f pom.xml ]; do sleep 1; done
 
 echo "---[ pom.xml ]---------------------------------"
-cat pom.xml
+cat -n pom.xml
 echo "-----------------------------------------------"
 
 line=$(grep "<version>" pom.xml | head -n 2 | tail -n 1)
