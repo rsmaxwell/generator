@@ -2,7 +2,7 @@
 
 set -x
 
-cd ${tempdir}
+currentdir=$(pwd)
 result=$?
 if [ ! $result == 0 ]; then
     echo "$0[${LINENO}]"
@@ -24,14 +24,6 @@ fi
 #*****************************************************************
 # Find the latest version of 'diaryjson'
 #*****************************************************************
-currentdir=$(pwd)
-result=$?
-if [ ! $result == 0 ]; then
-    echo "$0[${LINENO}]"
-    echo "result = $result"
-    exit 1
-fi
-
 tempdir=$(mktemp -d -t "latest-XXXXXXXXXXXX")
 result=$?
 if [ ! $result == 0 ]; then
