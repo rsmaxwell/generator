@@ -21,10 +21,10 @@ public class App {
 
 		// @formatter:off
 		Option version = Option.builder("v")
-				               .longOpt("version")
-				               .argName("version")
-				               .desc("show program version")
-				               .build();
+				            .longOpt("version")
+				            .argName("version")
+				            .desc("show program version")
+				            .build();
 		
 		Option help = Option.builder("h")
 				            .longOpt("help")
@@ -32,27 +32,13 @@ public class App {
 				            .desc("show program help")
 				            .build();
 		
-		Option file = Option.builder("f")
-				            .longOpt("file")
-				            .argName("file")
+		Option inputDir = Option.builder("i")
+				            .longOpt("inputDir")
+				            .argName("inputDir")
 				            .hasArg()
-				            .desc("set the input word file")
+				            .desc("set the input directory")
 				            .build();
-		
-		Option year = Option.builder("y")
-				            .longOpt("year")
-				            .argName("year")
-				            .hasArg()
-				            .desc("set the year")
-				            .build();
-		
-		Option workingDir = Option.builder("w")
-	                        .longOpt("workingDir")
-	                        .argName("workingDir")
-	                        .hasArg()
-	                        .desc("set the working directory")
-	                        .build();
-		
+
 		Option outputDir = Option.builder("o")
                             .longOpt("outputDir")
                             .argName("outputDir")
@@ -64,9 +50,7 @@ public class App {
 		Options options = new Options();
 		options.addOption(version);
 		options.addOption(help);
-		options.addOption(file);
-		options.addOption(year);
-		options.addOption(workingDir);
+		options.addOption(inputDir);
 		options.addOption(outputDir);
 
 		CommandLineParser parser = new DefaultParser();
@@ -82,61 +66,39 @@ public class App {
 		} else if (line.hasOption('h')) {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("generator <OPTION> ", options);
-		} else if (!line.hasOption('y')) {
-			System.out.println("Missing required option -y | --year");
-			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("generator <OPTION> ", options);
 		}
 
 		return line;
 	}
 
-	private static void clearWorkingDirectory(String relativeWorkingDirName) throws IOException {
-		File relativeWorkingDir = new File(relativeWorkingDirName);
-		String workingDirName = relativeWorkingDir.getCanonicalPath();
-		Path workingDir = Paths.get(workingDirName);
+	private static void clearOutputDirectory(String relativeOutputDirName) throws IOException {
+		File relativeOutputDir = new File(relativeOutputDirName);
+		String outputDirName = relativeOutputDir.getCanonicalPath();
+		Path outputDir = Paths.get(outputDirName);
 
-		if (Files.exists(workingDir)) {
-			Files.walk(workingDir).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+		if (Files.exists(outputDir)) {
+			Files.walk(outputDir).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
 		}
 
-		if (Files.exists(workingDir)) {
+		if (Files.exists(outputDir)) {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
 			}
 		}
-		Files.createDirectory(workingDir);
+		Files.createDirectory(outputDir);
 	}
 
 	public static void main(String[] args) throws Exception {
 
 		CommandLine line = getCommandLine(args);
 
+		String inputDirName = line.getOptionValue("w", "./input");
+
 		String outputDirName = line.getOptionValue("w", "./output");
+		clearOutputDirectory(outputDirName);
 
-		String workingDirName = line.getOptionValue("w", "./working");
-		clearWorkingDirectory(workingDirName);
-
-		Generator generator = Generator.INSTANCE;
-
-		String yearString = line.getOptionValue("y");
-		int year = Integer.parseInt(yearString);
-
-		String filename = line.getOptionValue("f");
-		generator.unzip(filename, workingDirName);
-
-		generator.tag = getBaseName(filename);
-		String outputFileName = outputDirName + "/" + generator.tag + ".json";
-		generator.toJson(workingDirName, outputFileName, year);
-	}
-
-	private static String getBaseName(String filename) {
-		File file = new File(filename);
-		String fileName = file.getName();
-		if (fileName.indexOf(".") > 0) {
-			fileName = fileName.substring(0, fileName.lastIndexOf("."));
-		}
-		return fileName;
+		Generator generator = new Generator();
+		generator.toPDF(inputDirName, outputDirName);
 	}
 }
