@@ -2,18 +2,22 @@
 
 set -x
 
+REPOSITORYURL="https://server.rsmaxwell.co.uk/archiva/repository"
+GROUPID="com.rsmaxwell.diary"
+
 currentdir=$(pwd)
 result=$?
-if [ ! $result == 0 ]; then
-    echo "$0[${LINENO}]"
-    echo "result = $result"
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
     exit 1
 fi
+
 
 #*****************************************************************
 # Clean previously built jars
 #*****************************************************************
-rm -rf ./target/generator-*.jar /tmp/latest* /tmp/diary*
+rm -rf ./target /tmp/latest* /tmp/diary*
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]" 
@@ -26,19 +30,21 @@ fi
 #*****************************************************************
 tempdir=$(mktemp -d -t "diary-XXXXXXXXXXXX")
 result=$?
-if [ ! $result == 0 ]; then
-    echo "$0[${LINENO}]"
-    echo "result = $result"
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
     exit 1
 fi
 
+
 cd $(tempdir)
 result=$?
-if [ ! $result == 0 ]; then
-    echo "$0[${LINENO}]"
-    echo "result = $result"
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
     exit 1
 fi
+
 
 groupId="com.rsmaxwell.diary"
 diaryjson_artifactId="diaryjson"
@@ -76,7 +82,7 @@ EOT
 
 mvn --batch-mode --log-file output.txt versions:use-latest-releases
 result=$?
-if [ ! ${result} == 0 ]; then
+if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
     echo "result: ${result}"
     echo "----[ output.txt ]--------------------------"
@@ -92,7 +98,7 @@ cat -n pom.xml
 echo "-----------------------------------------------"
 
 line=$(grep "<version>" pom.xml | head -n 2 | tail -n 1)
-if [ ${#line} == 0 ]; then
+if [ ${#line} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
     exit 1
 fi
@@ -108,17 +114,17 @@ echo "diaryjson_version: ${diaryjson_version}"
 
 cd ${currentdir}
 result=$?
-if [ ! $result == 0 ]; then
-    echo "$0[${LINENO}]"
-    echo "result = $result"
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
     exit 1
 fi
 
 rm -rf ${tempdir}
 result=$?
-if [ ! $result == 0 ]; then
-    echo "$0[${LINENO}]"
-    echo "result = $result"
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
     exit 1
 fi
 
@@ -145,7 +151,7 @@ done
 #*****************************************************************
 mvn --batch-mode --log-file output.txt versions:set -DnewVersion=${VERSION}
 result=$?
-if [ ! ${result} == 0 ]; then
+if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
     echo "result: ${result}"
     echo "----[ output.txt ]--------------------------"
@@ -159,7 +165,7 @@ fi
 #*****************************************************************
 mvn --batch-mode --log-file output.txt versions:use-dep-version -DdepVersion=${diaryjson_version} -Dincludes=com.rsmaxwell.diary:diaryjson
 result=$?
-if [ ! ${result} == 0 ]; then
+if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
     echo "result: ${result}"
     echo "----[ output.txt ]--------------------------"
