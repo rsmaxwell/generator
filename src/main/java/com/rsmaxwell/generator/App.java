@@ -1,5 +1,7 @@
 package com.rsmaxwell.generator;
 
+import java.io.File;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -68,11 +70,13 @@ public class App {
 
 		CommandLine line = getCommandLine(args);
 
-		String inputDirName = line.getOptionValue("i", "./input");
+		String inputDirName = line.getOptionValue("i", "output");
+		File inputDir = new File(inputDirName, "days");
 
-		String outputDirName = line.getOptionValue("o", "./output");
+		String outputDirName = line.getOptionValue("o", "output");
+		File outputDir = new File(outputDirName, "diary");
 
 		Generator generator = new Generator();
-		generator.toPDF(inputDirName, outputDirName);
+		generator.toPDF(inputDir, outputDir);
 	}
 }
