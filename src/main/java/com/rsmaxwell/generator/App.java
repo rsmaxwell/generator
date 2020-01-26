@@ -1,12 +1,5 @@
 package com.rsmaxwell.generator;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Comparator;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -71,32 +64,13 @@ public class App {
 		return line;
 	}
 
-	private static void clearOutputDirectory(String relativeOutputDirName) throws IOException {
-		File relativeOutputDir = new File(relativeOutputDirName);
-		String outputDirName = relativeOutputDir.getCanonicalPath();
-		Path outputDir = Paths.get(outputDirName);
-
-		if (Files.exists(outputDir)) {
-			Files.walk(outputDir).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
-		}
-
-		if (Files.exists(outputDir)) {
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-			}
-		}
-		Files.createDirectory(outputDir);
-	}
-
 	public static void main(String[] args) throws Exception {
 
 		CommandLine line = getCommandLine(args);
 
-		String inputDirName = line.getOptionValue("w", "./input");
+		String inputDirName = line.getOptionValue("i", "./input");
 
-		String outputDirName = line.getOptionValue("w", "./output");
-		clearOutputDirectory(outputDirName);
+		String outputDirName = line.getOptionValue("o", "./output");
 
 		Generator generator = new Generator();
 		generator.toPDF(inputDirName, outputDirName);
