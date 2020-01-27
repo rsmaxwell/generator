@@ -14,6 +14,8 @@ import java.util.TreeSet;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
+import com.rsmaxwell.diaryjson.Day;
+import com.rsmaxwell.diaryjson.Month;
 import com.rsmaxwell.diaryjson.OutputDay;
 
 public class Generator {
@@ -85,11 +87,23 @@ public class Generator {
 
 			for (OutputDay day : setOfDays) {
 
-				if ((previousYear == day.year) && (previousMonth == day.month) && (previousDay == day.day)) {
-					sb.append(" ");
-				} else {
-					String key = String.format("%04d-%02d-%02d  %s", day.year, day.month, day.day, day.page);
+				if (previousYear != day.year) {
+					String key = String.format("%04d", day.year);
 					sb.append("<h2>" + key + "</h2>");
+				}
+
+				if (previousMonth != day.month) {
+					String key = Month.toString(day.month);
+					sb.append("<h3>" + key + "</h3>");
+				}
+
+				if (previousDay != day.day) {
+					String key = String.format("%s  %02d     %s", Day.toString(day.day), day.day, day.reference);
+					sb.append("<h4>" + key + "</h4>");
+				}
+
+				if ((previousYear != day.year) && (previousMonth == day.month) && (previousDay == day.day)) {
+					sb.append(" ");
 				}
 				sb.append(day.html.trim());
 
