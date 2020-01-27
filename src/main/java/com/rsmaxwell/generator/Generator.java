@@ -1,6 +1,7 @@
 package com.rsmaxwell.generator;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,6 +10,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itextpdf.html2pdf.ConverterProperties;
+import com.itextpdf.html2pdf.HtmlConverter;
 import com.rsmaxwell.diaryjson.OutputDay;
 
 public class Generator {
@@ -18,8 +21,6 @@ public class Generator {
 		// ----------------------------------------------------------
 		// - List the json files, ordered by date
 		// ----------------------------------------------------------
-		final String regex1 = "[\\d]{4}-[\\d]{2}-[\\d]{2}-.*";
-
 		File outputDir = new File(outputDirName);
 		outputDir.mkdirs();
 
@@ -31,7 +32,7 @@ public class Generator {
 			File[] files = inputDir.listFiles(new FilenameFilter() {
 				@Override
 				public boolean accept(File dir, String name) {
-					boolean ok = name.matches(regex1);
+					boolean ok = name.toLowerCase().endsWith(".json");
 					return ok;
 				}
 			});
@@ -61,13 +62,16 @@ public class Generator {
 		// - Output an HTML document for each year, by looping through each day in order
 		// - combining continuation days as appropriate.
 		// ----------------------------------------------------------
+		File htmlDir = new File(outputDir, "html");
+		htmlDir.mkdirs();
+
 		for (Integer year : mapOfYears.keySet()) {
 
 			System.out.println("---[ " + year + "]-----------------------");
 
-			TreeSet<OutputDay> setOfDays = mapOfYears.get(year);
-
 			StringBuilder sb = new StringBuilder();
+
+			TreeSet<OutputDay> setOfDays = mapOfYears.get(year);
 
 			int previousYear = 0;
 			int previousMonth = 0;
@@ -76,33 +80,26 @@ public class Generator {
 			for (OutputDay day : setOfDays) {
 
 				if ((previousYear == day.year) && (previousMonth == day.month) && (previousDay == day.day)) {
-					System.out.println("---[continued   " + day.page + "]-----");
 					sb.append(" ");
 				} else {
-					printLine(sb.toString());
-					sb.setLength(0);
-
 					String key = String.format("%04d-%02d-%02d  %s", day.year, day.month, day.day, day.page);
-					System.out.println("---[" + key + "]------");
+					sb.append("<h2>" + key + "</h2>");
 				}
-				sb.append(day.line.trim());
+				sb.append(day.html.trim());
 
 				previousYear = day.year;
 				previousMonth = day.month;
 				previousDay = day.day;
 			}
 
-			if (sb.length() > 0) {
-				printLine(sb.toString());
-			}
+			String regex = "[\\s]*[\\.]{3}</p> <p>[\\.]{3}[\\s]*";
+			String html = sb.toString().replaceAll(regex, " ");
+
+			File htmlFile = new File(htmlDir, Integer.toString(year));
+
+			ConverterProperties properties = new ConverterProperties();
+			properties.setBaseUri("output/html");
+			HtmlConverter.convertToPdf(html, new FileOutputStream(htmlFile), properties);
 		}
-	}
-
-	private void printLine(String line) {
-
-		String regex = "[\\s]*[\\.]{3}</p> <p>[\\.]{3}[\\s]*";
-		line = line.replaceAll(regex, " ");
-
-		System.out.println(line);
 	}
 }
