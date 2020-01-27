@@ -1,7 +1,5 @@
 package com.rsmaxwell.generator;
 
-import java.io.File;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -31,7 +29,7 @@ public class App {
 				            .longOpt("inputDir")
 				            .argName("inputDir")
 				            .hasArg()
-				            .desc("set the input directory")
+				            .desc("add an input directory")
 				            .build();
 
 		Option outputDir = Option.builder("o")
@@ -69,14 +67,10 @@ public class App {
 	public static void main(String[] args) throws Exception {
 
 		CommandLine line = getCommandLine(args);
-
-		String inputDirName = line.getOptionValue("i", "output");
-		File inputDir = new File(inputDirName, "days");
-
+		String[] inputDirNames = line.getOptionValues("i");
 		String outputDirName = line.getOptionValue("o", "output");
-		File outputDir = new File(outputDirName, "diary");
 
 		Generator generator = new Generator();
-		generator.toPDF(inputDir, outputDir);
+		generator.toPDF(outputDirName, inputDirNames);
 	}
 }

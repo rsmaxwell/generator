@@ -2,6 +2,9 @@ package com.rsmaxwell.generator;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -10,23 +13,39 @@ import com.rsmaxwell.diaryjson.OutputDay;
 
 public class Generator {
 
-	public void toPDF(File inputDir, File outputDir) throws Exception {
+	public void toPDF(String outputDirName, String... inputDirNames) throws Exception {
 
-		outputDir.mkdirs();
-
+		// ----------------------------------------------------------
+		// - List the json files, ordered by date
+		// ----------------------------------------------------------
 		final String regex1 = "[\\d]{4}-[\\d]{2}-[\\d]{2}-.*";
 
-		File[] files = inputDir.listFiles(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-				boolean ok = name.matches(regex1);
-				return ok;
-			}
-		});
+		File outputDir = new File(outputDirName);
+		outputDir.mkdirs();
 
+		List<File> allFiles = new ArrayList<File>();
+
+		for (String inputDirName : inputDirNames) {
+			File inputDir = new File(inputDirName);
+
+			File[] files = inputDir.listFiles(new FilenameFilter() {
+				@Override
+				public boolean accept(File dir, String name) {
+					boolean ok = name.matches(regex1);
+					return ok;
+				}
+			});
+			allFiles.addAll(Arrays.asList(files));
+		}
+
+		// ----------------------------------------------------------
+		// - Parse the json files into OutputDay objects and collect each year
+		// separately
+		// - (There may be more than one OutputDay object for an actual day)
+		// ----------------------------------------------------------
 		TreeMap<Integer, TreeSet<OutputDay>> mapOfYears = new TreeMap<Integer, TreeSet<OutputDay>>();
 
-		for (File file : files) {
+		for (File file : allFiles) {
 			ObjectMapper objectMapper = new ObjectMapper();
 			OutputDay day = objectMapper.readValue(file, OutputDay.class);
 
@@ -38,6 +57,10 @@ public class Generator {
 			set.add(day);
 		}
 
+		// ----------------------------------------------------------
+		// - Output an HTML document for each year, by looping through each day in order
+		// - combining continuation days as appropriate.
+		// ----------------------------------------------------------
 		for (Integer year : mapOfYears.keySet()) {
 
 			System.out.println("---[ " + year + "]-----------------------");
