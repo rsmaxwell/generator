@@ -1,8 +1,10 @@
 package com.rsmaxwell.generator;
 
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,8 +49,15 @@ public class Generator {
 		TreeMap<Integer, TreeSet<OutputDay>> mapOfYears = new TreeMap<Integer, TreeSet<OutputDay>>();
 
 		for (File file : allFiles) {
+
 			ObjectMapper objectMapper = new ObjectMapper();
-			OutputDay day = objectMapper.readValue(file, OutputDay.class);
+			OutputDay day = null;
+
+			try {
+				day = objectMapper.readValue(file, OutputDay.class);
+			} catch (Exception e) {
+				throw new Exception(file.getCanonicalPath(), e);
+			}
 
 			TreeSet<OutputDay> set = mapOfYears.get(day.year);
 			if (set == null) {
@@ -95,11 +104,17 @@ public class Generator {
 			String regex = "[\\s]*[\\.]{3}</p> <p>[\\.]{3}[\\s]*";
 			String html = sb.toString().replaceAll(regex, " ");
 
-			File htmlFile = new File(htmlDir, Integer.toString(year));
+			File htmlFile = new File(htmlDir, Integer.toString(year) + ".html");
+			Path path = htmlFile.toPath();
+			try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+				writer.write(html);
+			}
+
+			File pdfFile = new File(htmlDir, Integer.toString(year) + ".pdf");
 
 			ConverterProperties properties = new ConverterProperties();
 			properties.setBaseUri("output/html");
-			HtmlConverter.convertToPdf(html, new FileOutputStream(htmlFile), properties);
+			HtmlConverter.convertToPdf(htmlFile, pdfFile, properties);
 		}
 	}
 }
