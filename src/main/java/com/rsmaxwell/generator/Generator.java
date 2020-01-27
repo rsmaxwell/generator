@@ -71,9 +71,6 @@ public class Generator {
 		// - Output an HTML document for each year, by looping through each day in order
 		// - combining continuation days as appropriate.
 		// ----------------------------------------------------------
-		File htmlDir = new File(outputDir, "html");
-		htmlDir.mkdirs();
-
 		for (Integer year : mapOfYears.keySet()) {
 
 			System.out.println("---[ " + year + "]-----------------------");
@@ -104,13 +101,19 @@ public class Generator {
 			String regex = "[\\s]*[\\.]{3}</p> <p>[\\.]{3}[\\s]*";
 			String html = sb.toString().replaceAll(regex, " ");
 
+			File htmlDir = new File(outputDir, "html");
+			htmlDir.mkdirs();
+
 			File htmlFile = new File(htmlDir, Integer.toString(year) + ".html");
 			Path path = htmlFile.toPath();
 			try (BufferedWriter writer = Files.newBufferedWriter(path)) {
 				writer.write(html);
 			}
 
-			File pdfFile = new File(htmlDir, Integer.toString(year) + ".pdf");
+			File pdfDir = new File(outputDir, "pdf");
+			pdfDir.mkdirs();
+
+			File pdfFile = new File(pdfDir, Integer.toString(year) + ".pdf");
 
 			ConverterProperties properties = new ConverterProperties();
 			properties.setBaseUri("output/html");
