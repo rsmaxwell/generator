@@ -66,8 +66,10 @@ public class Generator {
 			TreeSet<OutputDay> set = mapOfYears.get(day.year);
 			if (set == null) {
 				set = new TreeSet<OutputDay>();
+
 				mapOfYears.put(day.year, set);
 			}
+
 			set.add(day);
 		}
 
@@ -108,7 +110,7 @@ public class Generator {
 						sb.append("<h4>" + key + "</h4>");
 					}
 
-					if ((previousYear != day.year) && (previousMonth == day.month) && (previousDay == day.day)) {
+					if ((previousYear == day.year) && (previousMonth == day.month) && (previousDay == day.day)) {
 						sb.append(" ");
 					}
 					sb.append(day.html.trim());
