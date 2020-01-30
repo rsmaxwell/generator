@@ -18,7 +18,7 @@ import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
 import com.rsmaxwell.diaryjson.Day;
 import com.rsmaxwell.diaryjson.Month;
-import com.rsmaxwell.diaryjson.OutputDay;
+import com.rsmaxwell.diaryjson.Fragment;
 
 public class Generator {
 
@@ -50,22 +50,22 @@ public class Generator {
 		// separately
 		// - (There may be more than one OutputDay object for an actual day)
 		// ----------------------------------------------------------
-		TreeMap<Integer, TreeSet<OutputDay>> mapOfYears = new TreeMap<Integer, TreeSet<OutputDay>>();
+		TreeMap<Integer, TreeSet<Fragment>> mapOfYears = new TreeMap<Integer, TreeSet<Fragment>>();
 
 		for (File file : allFiles) {
 
 			ObjectMapper objectMapper = new ObjectMapper();
-			OutputDay day = null;
+			Fragment day = null;
 
 			try {
-				day = objectMapper.readValue(file, OutputDay.class);
+				day = objectMapper.readValue(file, Fragment.class);
 			} catch (Exception e) {
 				throw new Exception(file.getCanonicalPath(), e);
 			}
 
-			TreeSet<OutputDay> set = mapOfYears.get(day.year);
+			TreeSet<Fragment> set = mapOfYears.get(day.year);
 			if (set == null) {
-				set = new TreeSet<OutputDay>();
+				set = new TreeSet<Fragment>();
 
 				mapOfYears.put(day.year, set);
 			}
@@ -83,13 +83,13 @@ public class Generator {
 
 			StringBuilder sb = new StringBuilder();
 
-			TreeSet<OutputDay> setOfDays = mapOfYears.get(year);
+			TreeSet<Fragment> setOfDays = mapOfYears.get(year);
 
 			int previousYear = 0;
 			int previousMonth = 0;
 			int previousDay = 0;
 
-			for (OutputDay day : setOfDays) {
+			for (Fragment day : setOfDays) {
 				try {
 					if (previousYear != day.year) {
 						String key = String.format("%04d", day.year);
