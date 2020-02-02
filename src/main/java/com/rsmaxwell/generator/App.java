@@ -67,10 +67,10 @@ public class App {
 	public static void main(String[] args) throws Exception {
 
 		CommandLine line = getCommandLine(args);
-		String[] inputDirNames = line.getOptionValues("i");
+		String inputDirName = line.getOptionValue("i", "data");
 		String outputDirName = line.getOptionValue("o", "output");
 
-		Generator generator = new Generator();
-		generator.toPDF(outputDirName, inputDirNames);
+		Generator generator = new Generator(inputDirName, outputDirName);
+		generator.toPDF();
 	}
 }
