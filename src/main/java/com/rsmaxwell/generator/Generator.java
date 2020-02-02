@@ -260,7 +260,7 @@ public class Generator {
 	}
 
 	private String getTemplate(String template, Map<String, String> map) throws Exception {
-		String content = new String(Files.readAllBytes(Paths.get(inputDirName + "/templates/" + template)));
+		String content = new String(Files.readAllBytes(Paths.get(inputDirName + "/data/templates/" + template)));
 
 		map.put("@@BUILD_ID@@", getenv("BUILD_ID", "snapshot"));
 		map.put("@@BUILD_DATE@@", getenv("BUILD_DATE", "snapshot"));
