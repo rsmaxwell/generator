@@ -158,13 +158,6 @@ public class Generator {
 			// -------------------------------------------------------
 			for (Fragment fragment : setOfFragments) {
 				try {
-					// -------------------------------------------------------
-					// If necessary, write out a header
-					// -------------------------------------------------------
-					if (previousYear != fragment.year) {
-						html.append(getTemplate(YEAR_HEADER, map, fragment));
-					}
-
 					if (previousMonth != fragment.month) {
 						html.append(getTemplate(MONTH_HEADER, map, fragment));
 					}
