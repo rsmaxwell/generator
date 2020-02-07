@@ -1,0 +1,17 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Pinyon+Script">
+<link rel="stylesheet" type="text/css" href="css/diary.css">
+<title>Diary of John Richard Scott - @@YEAR@@</title>
+<meta name="description" content="Diary of John Richard Scott - @@YEAR@@" />
+</head>
+
+<body>
+<div class="frontpage-medium" >
+<p>Diary of</p>
+<p>John Richard Scott</p>
+</div>
+
+<div class="frontpage-large" >
+<p>@@YEAR@@</p>
+</div>

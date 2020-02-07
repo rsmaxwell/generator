@@ -1,0 +1,127 @@
+
+.intro-table table {
+border: 1px solid lightgrey;
+}
+
+.frontpage-large {
+color: navy;
+margin-left: 50px;
+margin-right: 50px;
+text-align: center;
+font-family: 'Pinyon Script', cursive;
+font-size: 60px;
+}
+
+.frontpage-medium {
+color: navy;
+margin-left: 50px;
+margin-right: 50px;
+text-align: center;
+font-family: 'Pinyon Script', cursive;
+font-size: 40px;
+}
+
+.frontpage-small {
+color: navy;
+margin-left: 50px;
+margin-right: 50px;
+text-align: center;
+font-family: 'Pinyon Script', cursive;
+font-size: 20px;
+}
+
+.intro-large {
+color: navy;
+margin-left: 50px;
+margin-right: 50px;
+text-align: center;
+font-family: 'Pinyon Script', cursive;
+font-size: 60px;
+}
+
+.intro-medium {
+color: navy;
+margin-left: 50px;
+margin-right: 50px;
+text-align: center;
+font-family: 'Pinyon Script', cursive;
+font-size: 20px;
+}
+
+.intro-medium-right {
+color: navy;
+margin-left: 50px;
+margin-right: 50px;
+text-align: right;
+font-family: 'Pinyon Script', cursive;
+font-size: 30px;
+}
+
+.normal {
+margin-left: 50px;
+margin-right: 50px;
+}
+
+.year {
+color: navy;
+font-family: 'Pinyon Script', cursive;
+font-size: 50px;
+}
+
+.month {
+color: navy;
+font-family: 'Pinyon Script', cursive;
+font-size: 40px;
+}
+
+.day {
+color: navy;
+font-family: 'Pinyon Script', cursive;
+font-size: 30px;
+}
+
+.highlight_yellow {
+background-color: yellow;
+}
+.highlight_lime {
+background-color: lime;
+}
+.highlight_aqua {
+background-color: aqua;
+}
+.highlight_magenta {
+background-color: magenta;
+}
+.highlight_blue {
+background-color: blue;
+}
+.highlight_red {
+background-color: red;
+}
+.highlight_navy {
+background-color: navy;
+}
+.highlight_teal {
+background-color: teal;
+}
+.highlight_green {
+background-color: green;
+}
+.highlight_purple {
+background-color: purple;
+}
+.highlight_maroon {
+background-color: maroon;
+}
+.highlight_olive {
+background-color: olive;
+}
+.highlight_gray {
+background-color: gray;
+}
+.highlight_silver {
+background-color: silver;
+}
+.highlight_black {
+background-color: black;
+}

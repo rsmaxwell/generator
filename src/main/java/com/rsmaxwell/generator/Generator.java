@@ -22,6 +22,7 @@ import com.rsmaxwell.diaryjson.Template;
 public class Generator {
 
 	private static final String DOCUMENT_HEADER = "document-header.txt";
+	private static final String DOCUMENT_INFO = "document-info.txt";
 	private static final String DOCUMENT_FOOTER = "document-footer.txt";
 	private static final String YEAR_HEADER = "year-header.txt";
 	private static final String MONTH_HEADER = "month-header.txt";
@@ -176,13 +177,19 @@ public class Generator {
 
 				if ((previousDay == null) || (previousDay.year != day.year)) {
 					if (!day.hasDocumentHeader()) {
-						Fragment f = new Fragment(day.year, day.month, day.day, "a");
+						Fragment f = new Fragment(day.year, day.month, day.day, "ab");
 						f.html = Template.getString(new File(templateDir, DOCUMENT_HEADER), day);
 						listOfNewFragments.add(f);
 					}
 
+					if (!day.hasDocumentHeader()) {
+						Fragment f = new Fragment(day.year, day.month, day.day, "ar");
+						f.html = Template.getString(new File(templateDir, DOCUMENT_INFO), day);
+						listOfNewFragments.add(f);
+					}
+
 					if (!day.hasYearHeader()) {
-						Fragment f = new Fragment(day.year, day.month, day.day, "b");
+						Fragment f = new Fragment(day.year, day.month, day.day, "bm");
 						f.html = Template.getString(new File(templateDir, YEAR_HEADER), day);
 						listOfNewFragments.add(f);
 					}
@@ -190,7 +197,7 @@ public class Generator {
 
 				if ((previousDay == null) || (previousDay.month != day.month)) {
 					if (!day.hasMonthHeader()) {
-						Fragment f = new Fragment(day.year, day.month, day.day, "c");
+						Fragment f = new Fragment(day.year, day.month, day.day, "cm");
 						f.html = Template.getString(new File(templateDir, MONTH_HEADER), day);
 						listOfNewFragments.add(f);
 					}
@@ -198,7 +205,7 @@ public class Generator {
 
 				if ((previousDay == null) || (previousDay.day != day.day)) {
 					if (!day.hasDayHeader()) {
-						Fragment f = new Fragment(day.year, day.month, day.day, "d");
+						Fragment f = new Fragment(day.year, day.month, day.day, "dm");
 						f.html = Template.getString(new File(templateDir, DAY_HEADER), day);
 						listOfNewFragments.add(f);
 					}

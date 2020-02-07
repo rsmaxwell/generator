@@ -1,0 +1,42 @@
+<div style="page-break-after: always;">
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</div>
+
+<div class="intro-table" >
+<table>
+    <tr>
+        <td><p>BUILD_ID</p></td>
+        <td><p>&nbsp</p></td>
+        <td><p>@@BUILD_ID@@</p></td>
+    </tr>
+    <tr>
+        <td><p>BUILD_DATE</p></td>
+        <td><p>&nbsp</p></td>
+        <td><p>@@BUILD_DATE@@</p></td>
+    </tr>
+    <tr>
+        <td><p>GIT_COMMIT</p></td>
+        <td><p>&nbsp</p></td>
+        <td><p>@@GIT_COMMIT@@</p></td>
+    </tr>
+    <tr>
+        <td><p>GIT_BRANCH</p></td>
+        <td><p>&nbsp</p></td>
+        <td><p>@@GIT_BRANCH@@</p></td>
+    </tr>
+    <tr>
+        <td><p>GIT_URL</p></td>
+        <td><p>&nbsp</p></td>
+        <td><p>@@GIT_URL@@</p></td>
+    </tr>
+</table>
+</div>
+
+<div style="font-size:12.0pt; page-break-after: always;" class="normal">
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>Copyright &copy;    2019-@@CURRENT_YEAR@@    Richard Scott Maxwell</p>
+</div>
