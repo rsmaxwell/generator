@@ -219,13 +219,13 @@ public class Generator {
 
 				if ((previousDay == null) || (previousDay.month != day.month)) {
 					if (!day.hasMonthHeader_1()) {
-						Fragment f = new Fragment(day.year, day.month, day.day, "d");
+						Fragment f = new Fragment(day.year, day.month, day.day, "db");
 						f.html = Template.getString(new File(templateDir, MONTH_HEADER_1), day);
 						listOfNewFragments.add(f);
 					}
 
 					if (!day.hasMonthHeader_2()) {
-						Fragment f = new Fragment(day.year, day.month, day.day, "d");
+						Fragment f = new Fragment(day.year, day.month, day.day, "dc");
 						f.html = Template.getString(new File(templateDir, MONTH_HEADER_2), day);
 						listOfNewFragments.add(f);
 					}
