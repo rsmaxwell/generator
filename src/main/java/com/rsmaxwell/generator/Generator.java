@@ -29,7 +29,8 @@ public class Generator {
 	private static final String YEAR_HEADER_1 = "year-header-1.txt";
 	private static final String YEAR_HEADER_2 = "year-header-2.txt";
 	private static final String YEAR_FOOTER = "year-footer.txt";
-	private static final String MONTH_HEADER = "month-header.txt";
+	private static final String MONTH_HEADER_1 = "month-header-1.txt";
+	private static final String MONTH_HEADER_2 = "month-header-2.txt";
 	private static final String MONTH_FOOTER = "month-footer.txt";
 	private static final String DAY_HEADER = "day-header.txt";
 	private static final String DAY_FOOTER = "day-footer.txt";
@@ -217,9 +218,15 @@ public class Generator {
 				}
 
 				if ((previousDay == null) || (previousDay.month != day.month)) {
-					if (!day.hasMonthHeader()) {
+					if (!day.hasMonthHeader_1()) {
 						Fragment f = new Fragment(day.year, day.month, day.day, "d");
-						f.html = Template.getString(new File(templateDir, MONTH_HEADER), day);
+						f.html = Template.getString(new File(templateDir, MONTH_HEADER_1), day);
+						listOfNewFragments.add(f);
+					}
+
+					if (!day.hasMonthHeader_2()) {
+						Fragment f = new Fragment(day.year, day.month, day.day, "d");
+						f.html = Template.getString(new File(templateDir, MONTH_HEADER_2), day);
 						listOfNewFragments.add(f);
 					}
 				}
