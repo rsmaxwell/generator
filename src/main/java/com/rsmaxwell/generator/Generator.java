@@ -2,6 +2,7 @@ package com.rsmaxwell.generator;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -80,9 +81,15 @@ public class Generator {
 	public void toPDF() throws Exception {
 
 		// ----------------------------------------------------------
-		// - List the fragment files, ordered by date
+		// - List the fragment directories
 		// ----------------------------------------------------------
-		File[] fragmentsDirs = fragmentsDirFile.listFiles();
+		File[] fragmentsDirs = fragmentsDirFile.listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				File file = new File(dir, name);
+				return file.isDirectory();
+			}
+		});
 
 		// Check there is at least one fragment directory!
 		if (fragmentsDirs.length <= 0) {
