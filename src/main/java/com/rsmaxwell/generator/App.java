@@ -67,7 +67,7 @@ public class App {
 	public static void main(String[] args) throws Exception {
 
 		CommandLine line = getCommandLine(args);
-		String inputDirName = line.getOptionValue("i", "data");
+		String inputDirName = line.getOptionValue("i", "input");
 		String outputDirName = line.getOptionValue("o", "output");
 
 		Generator generator = new Generator(inputDirName, outputDirName);
