@@ -109,43 +109,48 @@ public class Generator {
 
 			for (File dir : fragmentsDirs) {
 
-				// ----------------------------------------------------------
-				// - Read the fragments from file
-				// ----------------------------------------------------------
-				Fragment fragment = objectMapper.readValue(new File(dir, "fragment.json"), Fragment.class);
-				fragment.html = new String(Files.readAllBytes(new File(dir, "fragment.html").toPath()));
+				try {
+					// ----------------------------------------------------------
+					// - Read the fragments from file
+					// ----------------------------------------------------------
+					Fragment fragment = objectMapper.readValue(new File(dir, "fragment.json"), Fragment.class);
+					fragment.html = new String(Files.readAllBytes(new File(dir, "fragment.html").toPath()));
 
-				if ((previousDay.year == fragment.year) && (previousDay.month == fragment.month) && (previousDay.day == fragment.day)) {
-					day.add(fragment);
+					if ((previousDay.year == fragment.year) && (previousDay.month == fragment.month) && (previousDay.day == fragment.day)) {
+						day.add(fragment);
 
-				} else {
-					if (day != null) {
-						Key key = new Key(day.year, day.month, day.day);
-						mapOfDays.put(key, day);
-					}
-					day = new DayOfFragments(fragment.year, fragment.month, fragment.day);
-					day.add(fragment);
-				}
-
-				// ----------------------------------------------------------
-				// - Generate the dependencies
-				// ----------------------------------------------------------
-				if ((previousDay.year == fragment.year)) {
-					deps.append(" ");
-					deps.append(fragmentsDirName + "/" + dir.getName() + "/fragment.json");
-
-				} else {
-					if (deps.length() >= 0) {
-						String diaryName = Integer.toString(previousDay.year);
-						Path depsPath = Paths.get(depsDirName + "/" + diaryName + ".mk");
-						try (BufferedWriter writer = Files.newBufferedWriter(depsPath)) {
-							writer.write(deps.toString());
+					} else {
+						if (day != null) {
+							Key key = new Key(day.year, day.month, day.day);
+							mapOfDays.put(key, day);
 						}
+						day = new DayOfFragments(fragment.year, fragment.month, fragment.day);
+						day.add(fragment);
 					}
 
-					String diaryName = Integer.toString(day.year);
-					deps.append(baseUriName + "/" + diaryName + ".html");
-					deps.append(" :");
+					// ----------------------------------------------------------
+					// - Generate the dependencies
+					// ----------------------------------------------------------
+					if ((previousDay.year == fragment.year)) {
+						deps.append(" ");
+						deps.append(fragmentsDirName + "/" + dir.getName() + "/fragment.json");
+
+					} else {
+						if (deps.length() >= 0) {
+							String diaryName = Integer.toString(previousDay.year);
+							Path depsPath = Paths.get(depsDirName + "/" + diaryName + ".mk");
+							try (BufferedWriter writer = Files.newBufferedWriter(depsPath)) {
+								writer.write(deps.toString());
+							}
+						}
+
+						String diaryName = Integer.toString(day.year);
+						deps.append(baseUriName + "/" + diaryName + ".html");
+						deps.append(" :");
+					}
+
+				} catch (Exception e) {
+					throw new Exception(dir.getCanonicalPath(), e);
 				}
 
 				previousDay = day;
