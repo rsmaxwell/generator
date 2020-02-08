@@ -21,12 +21,17 @@ import com.rsmaxwell.diaryjson.Template;
 
 public class Generator {
 
-	private static final String DOCUMENT_HEADER = "document-header.txt";
-	private static final String DOCUMENT_INFO = "document-info.txt";
+	private static final String DOCUMENT_HEADER_1 = "document-header-1.txt";
+	private static final String DOCUMENT_HEADER_2 = "document-header-2.txt";
+	private static final String DOCUMENT_FORWARD = "document-forward.txt";
 	private static final String DOCUMENT_FOOTER = "document-footer.txt";
-	private static final String YEAR_HEADER = "year-header.txt";
+	private static final String YEAR_HEADER_1 = "year-header-1.txt";
+	private static final String YEAR_HEADER_2 = "year-header-2.txt";
+	private static final String YEAR_FOOTER = "year-footer.txt";
 	private static final String MONTH_HEADER = "month-header.txt";
+	private static final String MONTH_FOOTER = "month-footer.txt";
 	private static final String DAY_HEADER = "day-header.txt";
+	private static final String DAY_FOOTER = "day-footer.txt";
 
 	private static final String lineSeperator = System.getProperty("line.separator");
 
@@ -165,39 +170,43 @@ public class Generator {
 			for (Key key : mapOfDays.keySet()) {
 				DayOfFragments day = mapOfDays.get(key);
 
-				if (previousDay != null) {
-					if (previousDay.year != day.year) {
-						if (!previousDay.hasDocumentFooter()) {
-							Fragment f = new Fragment(previousDay.year, previousDay.month, previousDay.day, "z");
-							f.html = Template.getString(new File(templateDir, DOCUMENT_FOOTER), previousDay);
-							listOfNewFragments.add(f);
-						}
+				if (previousDay == null) {
+					if (!day.hasDocumentHeader_1()) {
+						Fragment f = new Fragment(day.year, day.month, day.day, "bb");
+						f.html = Template.getString(new File(templateDir, DOCUMENT_HEADER_1), day);
+						listOfNewFragments.add(f);
+					}
+
+					if (!day.hasDocumentHeader_2()) {
+						Fragment f = new Fragment(day.year, day.month, day.day, "bc");
+						f.html = Template.getString(new File(templateDir, DOCUMENT_HEADER_2), day);
+						listOfNewFragments.add(f);
+					}
+
+					if (!day.hasDocumentForward()) {
+						Fragment f = new Fragment(day.year, day.month, day.day, "bd");
+						f.html = Template.getString(new File(templateDir, DOCUMENT_FORWARD), day);
+						listOfNewFragments.add(f);
 					}
 				}
 
 				if ((previousDay == null) || (previousDay.year != day.year)) {
-					if (!day.hasDocumentHeader()) {
-						Fragment f = new Fragment(day.year, day.month, day.day, "ab");
-						f.html = Template.getString(new File(templateDir, DOCUMENT_HEADER), day);
+					if (!day.hasYearHeader_1()) {
+						Fragment f = new Fragment(day.year, day.month, day.day, "cb");
+						f.html = Template.getString(new File(templateDir, YEAR_HEADER_1), day);
 						listOfNewFragments.add(f);
 					}
 
-					if (!day.hasDocumentHeader()) {
-						Fragment f = new Fragment(day.year, day.month, day.day, "ar");
-						f.html = Template.getString(new File(templateDir, DOCUMENT_INFO), day);
-						listOfNewFragments.add(f);
-					}
-
-					if (!day.hasYearHeader()) {
-						Fragment f = new Fragment(day.year, day.month, day.day, "bm");
-						f.html = Template.getString(new File(templateDir, YEAR_HEADER), day);
+					if (!day.hasYearHeader_2()) {
+						Fragment f = new Fragment(day.year, day.month, day.day, "cc");
+						f.html = Template.getString(new File(templateDir, YEAR_HEADER_2), day);
 						listOfNewFragments.add(f);
 					}
 				}
 
 				if ((previousDay == null) || (previousDay.month != day.month)) {
 					if (!day.hasMonthHeader()) {
-						Fragment f = new Fragment(day.year, day.month, day.day, "cm");
+						Fragment f = new Fragment(day.year, day.month, day.day, "d");
 						f.html = Template.getString(new File(templateDir, MONTH_HEADER), day);
 						listOfNewFragments.add(f);
 					}
@@ -205,9 +214,43 @@ public class Generator {
 
 				if ((previousDay == null) || (previousDay.day != day.day)) {
 					if (!day.hasDayHeader()) {
-						Fragment f = new Fragment(day.year, day.month, day.day, "dm");
+						Fragment f = new Fragment(day.year, day.month, day.day, "e");
 						f.html = Template.getString(new File(templateDir, DAY_HEADER), day);
 						listOfNewFragments.add(f);
+					}
+				}
+
+				if (previousDay != null) {
+					if (previousDay.day != day.day) {
+						if (!previousDay.hasDayFooter()) {
+							Fragment f = new Fragment(previousDay.year, previousDay.month, previousDay.day, "xv");
+							f.html = Template.getString(new File(templateDir, DAY_FOOTER), previousDay);
+							listOfNewFragments.add(f);
+						}
+					}
+
+					if (previousDay.month != day.month) {
+						if (!previousDay.hasMonthFooter()) {
+							Fragment f = new Fragment(previousDay.year, previousDay.month, previousDay.day, "xw");
+							f.html = Template.getString(new File(templateDir, MONTH_FOOTER), previousDay);
+							listOfNewFragments.add(f);
+						}
+					}
+
+					if (previousDay.year != day.year) {
+						if (!previousDay.hasYearFooter()) {
+							Fragment f = new Fragment(previousDay.year, previousDay.month, previousDay.day, "xx");
+							f.html = Template.getString(new File(templateDir, YEAR_FOOTER), previousDay);
+							listOfNewFragments.add(f);
+						}
+					}
+
+					if (previousDay.year != day.year) {
+						if (!previousDay.hasDocumentFooter()) {
+							Fragment f = new Fragment(previousDay.year, previousDay.month, previousDay.day, "xy");
+							f.html = Template.getString(new File(templateDir, DOCUMENT_FOOTER), previousDay);
+							listOfNewFragments.add(f);
+						}
 					}
 				}
 
@@ -215,8 +258,26 @@ public class Generator {
 			}
 
 			if (previousDay != null) {
+				if (!previousDay.hasDayFooter()) {
+					Fragment f = new Fragment(previousDay.year, previousDay.month, previousDay.day, "xv");
+					f.html = Template.getString(new File(templateDir, DAY_FOOTER), previousDay);
+					listOfNewFragments.add(f);
+				}
+
+				if (!previousDay.hasMonthFooter()) {
+					Fragment f = new Fragment(previousDay.year, previousDay.month, previousDay.day, "xw");
+					f.html = Template.getString(new File(templateDir, MONTH_FOOTER), previousDay);
+					listOfNewFragments.add(f);
+				}
+
+				if (!previousDay.hasYearFooter()) {
+					Fragment f = new Fragment(previousDay.year, previousDay.month, previousDay.day, "xx");
+					f.html = Template.getString(new File(templateDir, YEAR_FOOTER), previousDay);
+					listOfNewFragments.add(f);
+				}
+
 				if (!previousDay.hasDocumentFooter()) {
-					Fragment f = new Fragment(previousDay.year, previousDay.month, previousDay.day, "z");
+					Fragment f = new Fragment(previousDay.year, previousDay.month, previousDay.day, "xy");
 					f.html = Template.getString(new File(templateDir, DOCUMENT_FOOTER), previousDay);
 					listOfNewFragments.add(f);
 				}

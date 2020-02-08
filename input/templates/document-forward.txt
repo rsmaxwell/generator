@@ -1,0 +1,42 @@
+<div class="forward-section" >
+<section>
+
+	<h2>Forward</h2>
+	<p>
+	A woodern chest had been handed down through the generations of the Maxwell family. 
+	There were rumors it was originally owned by a "Sea Captain", who shipped coal from Newcastle.
+	There were also vague family stories, for example that he took a young cabin-boy as an apprentice 
+	on one of his voyages, and the boy was tragically lost in a storm in the north sea. 
+	</p>
+
+	<p>
+	When the time was right I decided to open the chest and see if there was any truth in these stories.
+	This document is my reading of a series of diaries found inside the "Sea Captain's Chest".
+	</p>
+
+	<p>Richard Scott Maxwell</p>
+
+    <div class="forward-table" >
+    <table>
+        <tr>
+            <td><p>BUILD_ID</p></td>
+            <td><p>&emsp;</p></td>
+            <td><p>@@BUILD_ID@@</p></td>
+        </tr>
+        <tr>
+            <td><p>BUILD_DATE</p></td>
+            <td><p>&emsp;</p></td>
+            <td><p>@@BUILD_DATE@@</p></td>
+        </tr>
+    </table>
+    </div>
+    
+    <div class="forward-small" >
+        <p>Copyright &copy;&emsp;2019-@@BUILD_YEAR@@&emsp;Richard Scott Maxwell</p>
+    </div>
+</section>
+</div>
+
+<div style="page-break-after: always;">
+<p>&nbsp;</p>
+</div>

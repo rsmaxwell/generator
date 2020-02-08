@@ -1,33 +1,77 @@
 
-.intro-table table {
-border: 1px solid lightgrey;
+.frontpage-section section {
+background-image: url('diary-cover.png');
+margin-left: 50px;
+margin-right: 50px;
+border-style: solid;
+border-width: 10px 20px 20px 20px;
+border-image-source: url('diary-cover.png');
+border-image-repeat: repeat;
 }
 
 .frontpage-large {
-color: navy;
+color: black;
 margin-left: 50px;
 margin-right: 50px;
 text-align: center;
 font-family: 'Pinyon Script', cursive;
-font-size: 60px;
+font-size: 100px;
 }
 
 .frontpage-medium {
-color: navy;
+color: black;
 margin-left: 50px;
 margin-right: 50px;
 text-align: center;
 font-family: 'Pinyon Script', cursive;
-font-size: 40px;
+font-size: 80px;
 }
 
 .frontpage-small {
-color: navy;
+color: black;
 margin-left: 50px;
 margin-right: 50px;
 text-align: center;
 font-family: 'Pinyon Script', cursive;
-font-size: 20px;
+font-size: 50px;
+}
+
+
+
+
+.forward-section section {
+background-image: url('paper.jpg');
+margin-left: 50px;
+margin-right: 50px;
+border-style: solid;
+border-width: 10px 20px 20px 20px;
+border-color: olive;
+border-image-source: url('paper.jpg');
+border-image-repeat: repeat;
+}
+
+.forward-table table {
+border: 1px solid lightgrey;
+margin-top: 10cm;
+font-size: 10px;
+}
+
+.forward-small {
+font-size: 10px;
+}
+
+
+
+
+.year-section section {
+background-image: url('paper.jpg');
+margin-left: 50px;
+margin-right: 50px;
+border-style: solid;
+border-width: 10px 20px 20px 20px;
+border-color: olive;
+border-image-source: url('paper.jpg');
+border-image-repeat: repeat;
 }
 
 .intro-large {
@@ -56,6 +100,10 @@ text-align: right;
 font-family: 'Pinyon Script', cursive;
 font-size: 30px;
 }
+
+
+
+
 
 .normal {
 margin-left: 50px;
