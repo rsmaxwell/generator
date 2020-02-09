@@ -8,11 +8,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
-import com.rsmaxwell.diaryjson.DayOfFragments;
 import com.rsmaxwell.diaryjson.Fragment;
 import com.rsmaxwell.diaryjson.Key;
 import com.rsmaxwell.diaryjson.Templates;
@@ -78,7 +76,7 @@ public class Generator {
 		// ----------------------------------------------------------
 		// - List the fragment directories
 		// ----------------------------------------------------------
-		File[] fragmentsDirs = fragmentsDirFile.listFiles(new FilenameFilter() {
+		File[] fragmentsDir = fragmentsDirFile.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
 				File file = new File(dir, name);
@@ -87,7 +85,7 @@ public class Generator {
 		});
 
 		// Check there is at least one fragment directory!
-		if (fragmentsDirs.length <= 0) {
+		if (fragmentsDir.length <= 0) {
 			throw new Exception("no fragments found in: " + fragmentsDirFile.getCanonicalPath());
 		}
 
@@ -96,65 +94,51 @@ public class Generator {
 		// ----------------------------------------------------------
 		StringBuilder deps = new StringBuilder();
 
-		TreeMap<Key, DayOfFragments> mapOfDays = new TreeMap<Key, DayOfFragments>();
+		TreeMap<Key, Fragment> mapOfFragments = new TreeMap<Key, Fragment>();
 		{
-			DayOfFragments previousDay = new DayOfFragments(0, 0, 0);
-			DayOfFragments day = null;
+			Fragment previousFragment = new Fragment(0, 0, 0, "");
 
-			for (File dir : fragmentsDirs) {
-
+			for (File dir : fragmentsDir) {
 				try {
 					// ----------------------------------------------------------
-					// - Read the fragment from file
+					// - Read the fragment from file and add to the list
 					// ----------------------------------------------------------
 					Fragment fragment = Fragment.MakeFragment(dir);
 
-					if ((previousDay.year == fragment.year) && (previousDay.month == fragment.month) && (previousDay.day == fragment.day)) {
-						day.add(fragment);
-
-					} else {
-						if (day != null) {
-							Key key = new Key(day.year, day.month, day.day);
-							mapOfDays.put(key, day);
-						}
-						day = new DayOfFragments(fragment.year, fragment.month, fragment.day);
-						day.add(fragment);
-					}
+					Key key = new Key(fragment.year, fragment.month, fragment.day, fragment.order);
+					mapOfFragments.put(key, fragment);
 
 					// ----------------------------------------------------------
 					// - Generate the dependencies
 					// ----------------------------------------------------------
-					if ((previousDay.year == fragment.year)) {
+					if ((previousFragment.year == fragment.year)) {
 						deps.append(" ");
 						deps.append(fragmentsDirName + "/" + dir.getName() + "/fragment.json");
 
 					} else {
 						if (deps.length() >= 0) {
-							String diaryName = Integer.toString(previousDay.year);
+							String diaryName = Integer.toString(previousFragment.year);
 							Path depsPath = Paths.get(depsDirName + "/" + diaryName + ".mk");
 							try (BufferedWriter writer = Files.newBufferedWriter(depsPath)) {
 								writer.write(deps.toString());
 							}
 						}
 
-						String diaryName = Integer.toString(day.year);
+						String diaryName = Integer.toString(fragment.year);
+						deps = new StringBuilder();
 						deps.append(baseUriName + "/" + diaryName + ".html");
 						deps.append(" :");
 					}
 
+					previousFragment = fragment;
+
 				} catch (Exception e) {
 					throw new Exception(dir.getCanonicalPath(), e);
 				}
-
-				previousDay = day;
 			}
 
-			if (day != null) {
-				Key key = new Key(day.year, day.month, day.day);
-				mapOfDays.put(key, day);
-
-				String diaryName = Integer.toString(day.year);
-
+			if (deps.length() >= 0) {
+				String diaryName = Integer.toString(previousFragment.year);
 				Path depsPath = Paths.get(depsDirName + "/" + diaryName + ".mk");
 				try (BufferedWriter writer = Files.newBufferedWriter(depsPath)) {
 					writer.write(deps.toString());
@@ -167,40 +151,33 @@ public class Generator {
 		// (Use an intermediate list to avoid adding to the main
 		// collection as we are traversing it)
 		// -------------------------------------------------------
-		templates.addGeneratedFragments(mapOfDays);
+		templates.addGeneratedFragments(mapOfFragments);
 
 		// ----------------------------------------------------------
 		// Output an HTML and PDF document for each year
 		// ----------------------------------------------------------
 		{
-			DayOfFragments previousDay = new DayOfFragments(0, 0, 0);
+			Fragment previousFragment = new Fragment(0, 0, 0, "");
 
 			StringBuilder html = new StringBuilder();
 
-			for (Key key : mapOfDays.keySet()) {
-				DayOfFragments day = mapOfDays.get(key);
+			for (Key key : mapOfFragments.keySet()) {
+				Fragment fragment = mapOfFragments.get(key);
 
-				if (previousDay.year != day.year) {
+				if (previousFragment.year != fragment.year) {
 					if (html.length() > 0) {
-						generateHtmlAndPdfDocument(previousDay.year, html.toString());
+						generateHtmlAndPdfDocument(previousFragment.year, html.toString());
 					}
 
 					html = new StringBuilder();
 				}
 
-				TreeSet<Fragment> setOfFragments = day.fragments;
-				for (Fragment fragment : setOfFragments) {
-					html.append(fragment.html);
-				}
-
-				// -------------------------------------------------------
-				// Next ...
-				// -------------------------------------------------------
-				previousDay = day;
+				html.append(fragment.html);
+				previousFragment = fragment;
 			}
 
 			if (html.length() > 0) {
-				generateHtmlAndPdfDocument(previousDay.year, html.toString());
+				generateHtmlAndPdfDocument(previousFragment.year, html.toString());
 			}
 		}
 	}
