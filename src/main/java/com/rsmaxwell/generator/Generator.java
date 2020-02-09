@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -17,7 +15,7 @@ import com.itextpdf.html2pdf.HtmlConverter;
 import com.rsmaxwell.diaryjson.DayOfFragments;
 import com.rsmaxwell.diaryjson.Fragment;
 import com.rsmaxwell.diaryjson.Key;
-import com.rsmaxwell.diaryjson.Template;
+import com.rsmaxwell.diaryjson.Templates;
 
 public class Generator {
 
@@ -46,15 +44,15 @@ public class Generator {
 	private File pdfDirFile;
 	private File depsDirFile;
 
-	private Template template;
+	private Templates templates;
 
-	public Generator(String inputDirName, String outputDirName) {
+	public Generator(String inputDirName, String outputDirName) throws Exception {
 
 		inputDir = new File(inputDirName);
 		outputDir = new File(outputDirName);
 		outputDir.mkdirs();
 
-		template = new Template(new File(inputDir, "templates"));
+		templates = new Templates(new File(inputDir, "templates"));
 
 		// -------------------------------------------------------
 		// Establish directory names
@@ -171,110 +169,7 @@ public class Generator {
 		// (Use an intermediate list to avoid adding to the main
 		// collection as we are traversing it)
 		// -------------------------------------------------------
-		List<Fragment> listOfNewFragments = new ArrayList<Fragment>();
-
-		{
-			DayOfFragments previousDay = null;
-
-			for (Key key : mapOfDays.keySet()) {
-				DayOfFragments day = mapOfDays.get(key);
-
-				if (previousDay == null) {
-					if (!day.hasDocumentHeader_1()) {
-						listOfNewFragments.add(template.get(day, DOCUMENT_HEADER_1));
-					}
-
-					if (!day.hasDocumentHeader_2()) {
-						listOfNewFragments.add(template.get(day, DOCUMENT_HEADER_2));
-					}
-
-					if (!day.hasDocumentForward()) {
-						listOfNewFragments.add(template.get(day, DOCUMENT_FORWARD));
-					}
-				}
-
-				if ((previousDay == null) || (previousDay.year != day.year)) {
-					if (!day.hasYearHeader_1()) {
-						listOfNewFragments.add(template.get(day, YEAR_HEADER_1));
-					}
-
-					if (!day.hasYearHeader_2()) {
-						listOfNewFragments.add(template.get(day, YEAR_HEADER_2));
-					}
-				}
-
-				if ((previousDay == null) || (previousDay.month != day.month)) {
-					if (!day.hasMonthHeader_1()) {
-						listOfNewFragments.add(template.get(day, MONTH_HEADER_1));
-					}
-
-					if (!day.hasMonthHeader_2()) {
-						listOfNewFragments.add(template.get(day, MONTH_HEADER_2));
-					}
-				}
-
-				if ((previousDay == null) || (previousDay.day != day.day)) {
-					if (!day.hasDayHeader()) {
-						listOfNewFragments.add(template.get(day, DAY_HEADER));
-					}
-				}
-
-				if (previousDay != null) {
-					if (previousDay.day != day.day) {
-						if (!previousDay.hasDayFooter()) {
-							listOfNewFragments.add(template.get(previousDay, DAY_FOOTER));
-						}
-					}
-
-					if (previousDay.month != day.month) {
-						if (!previousDay.hasMonthFooter()) {
-							listOfNewFragments.add(template.get(previousDay, MONTH_FOOTER));
-						}
-					}
-
-					if (previousDay.year != day.year) {
-						if (!previousDay.hasYearFooter()) {
-							listOfNewFragments.add(template.get(previousDay, YEAR_FOOTER));
-						}
-					}
-
-					if (previousDay.year != day.year) {
-						if (!previousDay.hasDocumentFooter()) {
-							listOfNewFragments.add(template.get(previousDay, DOCUMENT_FOOTER));
-						}
-					}
-				}
-
-				previousDay = day;
-			}
-
-			if (previousDay != null) {
-				if (!previousDay.hasDayFooter()) {
-					listOfNewFragments.add(template.get(previousDay, DAY_FOOTER));
-				}
-
-				if (!previousDay.hasMonthFooter()) {
-					listOfNewFragments.add(template.get(previousDay, MONTH_FOOTER));
-				}
-
-				if (!previousDay.hasYearFooter()) {
-					listOfNewFragments.add(template.get(previousDay, YEAR_FOOTER));
-				}
-
-				if (!previousDay.hasDocumentFooter()) {
-					listOfNewFragments.add(template.get(previousDay, DOCUMENT_FOOTER));
-				}
-			}
-
-			// -------------------------------------------------------
-			// Add the generated fragments
-			// -------------------------------------------------------
-			for (Fragment fragment : listOfNewFragments) {
-				Key key = new Key(fragment.year, fragment.month, fragment.day);
-				DayOfFragments day = mapOfDays.get(key);
-				day.add(fragment);
-			}
-		}
+		templates.addGeneratedFragments(mapOfDays);
 
 		// ----------------------------------------------------------
 		// Output an HTML and PDF document for each year
