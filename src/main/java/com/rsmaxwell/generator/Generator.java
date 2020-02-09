@@ -37,7 +37,6 @@ public class Generator {
 	private String pdfDirName;
 	private String depsDirName;
 
-	private File inputDir;
 	private File fragmentsDirFile;
 	private File outputDir;
 	private File baseUri;
@@ -48,11 +47,10 @@ public class Generator {
 
 	public Generator(String inputDirName, String outputDirName) throws Exception {
 
-		inputDir = new File(inputDirName);
 		outputDir = new File(outputDirName);
 		outputDir.mkdirs();
 
-		templates = new Templates(new File(inputDir, "templates"));
+		templates = new Templates(new File(inputDirName, "templates"));
 
 		// -------------------------------------------------------
 		// Establish directory names
