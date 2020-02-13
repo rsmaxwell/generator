@@ -90,7 +90,7 @@ public class Generator {
 		}
 
 		// ----------------------------------------------------------
-		// - Read all the fragments from file
+		// - Read the fragments from file
 		// ----------------------------------------------------------
 		StringBuilder deps = new StringBuilder();
 
@@ -109,7 +109,7 @@ public class Generator {
 					mapOfFragments.put(key, fragment);
 
 					// ----------------------------------------------------------
-					// - Generate the dependencies
+					// - Write out the makefile dependencies for next time round
 					// ----------------------------------------------------------
 					if ((previousFragment.year == fragment.year)) {
 						deps.append(" ");
