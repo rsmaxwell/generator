@@ -17,19 +17,6 @@ import com.rsmaxwell.diaryjson.Templates;
 
 public class Generator {
 
-	private static final String DOCUMENT_HEADER_1 = "document-header-1";
-	private static final String DOCUMENT_HEADER_2 = "document-header-2";
-	private static final String DOCUMENT_FORWARD = "document-forward";
-	private static final String DOCUMENT_FOOTER = "document-footer";
-	private static final String YEAR_HEADER_1 = "year-header-1";
-	private static final String YEAR_HEADER_2 = "year-header-2";
-	private static final String YEAR_FOOTER = "year-footer";
-	private static final String MONTH_HEADER_1 = "month-header-1";
-	private static final String MONTH_HEADER_2 = "month-header-2";
-	private static final String MONTH_FOOTER = "month-footer";
-	private static final String DAY_HEADER = "day-header";
-	private static final String DAY_FOOTER = "day-footer";
-
 	private String fragmentsDirName;
 	private String baseUriName;
 	private String pdfDirName;
