@@ -125,10 +125,16 @@ font-family: 'Pinyon Script', cursive;
 font-size: 50px;
 }
 
-.day {
-color: navy;
-font-family: 'Pinyon Script', cursive;
-font-size: 30px;
+a:link, a:visited {
+  color: navy;
+  font-family: 'Pinyon Script', cursive;
+  font-size: 30px;
+  text-decoration: none;
+  display: inline-block;
+}
+
+a:hover, a:active {
+  color: red;
 }
 
 .highlight_yellow {

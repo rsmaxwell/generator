@@ -25,25 +25,25 @@ public class App {
 				            .desc("show program help")
 				            .build();
 		
-		Option inputDir = Option.builder("i")
-				            .longOpt("inputDir")
-				            .argName("inputDir")
+		Option templatesDir = Option.builder("t")
+				            .longOpt("templates")
+				            .argName("templates dir")
 				            .hasArg()
-				            .desc("add an input directory")
+				            .desc("set the templates dir")
 				            .build();
 
 		Option outputDir = Option.builder("o")
-                            .longOpt("outputDir")
-                            .argName("outputDir")
+                            .longOpt("output")
+                            .argName("output dir")
                             .hasArg()
-                            .desc("set the output directory")
+                            .desc("set the output dir")
                             .build();
 		// @formatter:on
 
 		Options options = new Options();
 		options.addOption(version);
 		options.addOption(help);
-		options.addOption(inputDir);
+		options.addOption(templatesDir);
 		options.addOption(outputDir);
 
 		CommandLineParser parser = new DefaultParser();
@@ -67,10 +67,20 @@ public class App {
 	public static void main(String[] args) throws Exception {
 
 		CommandLine line = getCommandLine(args);
-		String inputDirName = line.getOptionValue("i", "input");
+
+		if (!line.hasOption('t')) {
+			System.out.println("Missing required option -t | --templates");
+			return;
+		}
+		String templatesDirName = line.getOptionValue("t", "templates");
+
+		if (!line.hasOption('o')) {
+			System.out.println("Missing required option -o | --output");
+			return;
+		}
 		String outputDirName = line.getOptionValue("o", "output");
 
-		Generator generator = new Generator(inputDirName, outputDirName);
+		Generator generator = new Generator(templatesDirName, outputDirName);
 		generator.toPDF();
 	}
 }

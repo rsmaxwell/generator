@@ -30,12 +30,16 @@ public class Generator {
 
 	private Templates templates;
 
-	public Generator(String inputDirName, String outputDirName) throws Exception {
+	public Generator(String templatesDirName, String outputDirName) throws Exception {
 
 		outputDir = new File(outputDirName);
 		outputDir.mkdirs();
 
-		templates = new Templates(new File(inputDirName, "templates"));
+		File templatesDir = new File(templatesDirName);
+		if (!templatesDir.exists()) {
+			throw new Exception("dir not found: " + templatesDir);
+		}
+		templates = new Templates(templatesDir);
 
 		// -------------------------------------------------------
 		// Establish directory names
