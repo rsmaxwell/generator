@@ -91,6 +91,7 @@ public class Generator {
 					// - Read the fragment from file and add to the list
 					// ----------------------------------------------------------
 					Fragment fragment = Fragment.MakeFragment(dir);
+					fragment.check();
 
 					Key key = new Key(fragment.year, fragment.month, fragment.day, fragment.order);
 					mapOfFragments.put(key, fragment);
