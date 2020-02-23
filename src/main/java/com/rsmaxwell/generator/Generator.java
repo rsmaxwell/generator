@@ -44,7 +44,7 @@ public class Generator {
 		// -------------------------------------------------------
 		// Establish directory names
 		// -------------------------------------------------------
-		fragmentsDirName = outputDirName + "/" + year + "/fragments";
+		fragmentsDirName = outputDirName + "/fragments" + "/" + year;
 		fragmentsDirFile = new File(fragmentsDirName);
 		fragmentsDirFile.mkdirs();
 

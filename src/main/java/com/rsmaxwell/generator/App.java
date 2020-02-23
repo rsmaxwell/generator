@@ -28,6 +28,7 @@ public class App {
 		Option year = Option.builder("y")
 				            .longOpt("year")
 				            .argName("year")
+				            .hasArg()
 				            .desc("set the year")
 				            .build();
 		
