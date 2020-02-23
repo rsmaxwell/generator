@@ -25,6 +25,12 @@ public class App {
 				            .desc("show program help")
 				            .build();
 		
+		Option year = Option.builder("y")
+				            .longOpt("year")
+				            .argName("year")
+				            .desc("set the year")
+				            .build();
+		
 		Option templatesDir = Option.builder("t")
 				            .longOpt("templates")
 				            .argName("templates dir")
@@ -43,6 +49,7 @@ public class App {
 		Options options = new Options();
 		options.addOption(version);
 		options.addOption(help);
+		options.addOption(year);
 		options.addOption(templatesDir);
 		options.addOption(outputDir);
 
@@ -80,7 +87,13 @@ public class App {
 		}
 		String outputDirName = line.getOptionValue("o", "output");
 
-		Generator generator = new Generator(templatesDirName, outputDirName);
+		if (!line.hasOption('y')) {
+			System.out.println("Missing required option -y | --year");
+			return;
+		}
+		String year = line.getOptionValue("y");
+
+		Generator generator = new Generator(templatesDirName, outputDirName, year);
 		generator.toPDF();
 	}
 }

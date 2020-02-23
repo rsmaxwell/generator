@@ -30,7 +30,7 @@ public class Generator {
 
 	private Templates templates;
 
-	public Generator(String templatesDirName, String outputDirName) throws Exception {
+	public Generator(String templatesDirName, String outputDirName, String year) throws Exception {
 
 		outputDir = new File(outputDirName);
 		outputDir.mkdirs();
@@ -44,7 +44,7 @@ public class Generator {
 		// -------------------------------------------------------
 		// Establish directory names
 		// -------------------------------------------------------
-		fragmentsDirName = outputDirName + "/fragments";
+		fragmentsDirName = outputDirName + "/" + year + "/fragments";
 		fragmentsDirFile = new File(fragmentsDirName);
 		fragmentsDirFile.mkdirs();
 
@@ -59,7 +59,6 @@ public class Generator {
 		depsDirName = outputDirName + "/dependancies";
 		depsDirFile = new File(depsDirName);
 		depsDirFile.mkdirs();
-
 	}
 
 	public void toPDF() throws Exception {
