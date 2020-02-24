@@ -39,7 +39,7 @@ public class Generator {
 		if (!templatesDir.exists()) {
 			throw new Exception("dir not found: " + templatesDir);
 		}
-		templates = new Templates(templatesDir);
+		templates = new Templates(templatesDirName);
 
 		// -------------------------------------------------------
 		// Establish directory names
@@ -66,7 +66,7 @@ public class Generator {
 		// ----------------------------------------------------------
 		// - List the fragment directories
 		// ----------------------------------------------------------
-		File[] fragmentsDir = fragmentsDirFile.listFiles(new FilenameFilter() {
+		String[] fragmentDirNames = fragmentsDirFile.list(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
 				File file = new File(dir, name);
@@ -74,9 +74,17 @@ public class Generator {
 			}
 		});
 
+//		File[] fragmentsDir = fragmentsDirFile.listFiles(new FilenameFilter() {
+//			@Override
+//			public boolean accept(File dir, String name) {
+//				File file = new File(dir, name);
+//				return file.isDirectory();
+//			}
+//		});
+
 		// Check there is at least one fragment directory!
-		if (fragmentsDir.length <= 0) {
-			throw new Exception("no fragments found in: " + fragmentsDirFile.getCanonicalPath());
+		if (fragmentDirNames.length <= 0) {
+			throw new Exception("no fragments found in: " + fragmentsDirName);
 		}
 
 		// ----------------------------------------------------------
@@ -88,12 +96,16 @@ public class Generator {
 		{
 			Fragment previousFragment = new Fragment(0, 0, 0, "");
 
-			for (File dir : fragmentsDir) {
+			// for (File dir : fragmentsDir) {
+			for (String fragmentName : fragmentDirNames) {
+				String fragmentDirName = fragmentsDirName + "/" + fragmentName;
+
 				try {
 					// ----------------------------------------------------------
 					// - Read the fragment from file and add to the list
 					// ----------------------------------------------------------
-					Fragment fragment = Fragment.MakeFragment(dir);
+					File fragmentDir = new File(fragmentDirName);
+					Fragment fragment = Fragment.readFromFile(fragmentDir);
 					fragment.check();
 
 					Key key = new Key(fragment.year, fragment.month, fragment.day, fragment.order);
@@ -104,7 +116,7 @@ public class Generator {
 					// ----------------------------------------------------------
 					if ((previousFragment.year == fragment.year)) {
 						deps.append(" ");
-						deps.append(fragmentsDirName + "/" + dir.getName() + "/fragment.json");
+						deps.append(fragmentDirName + "/fragment.json");
 
 					} else {
 						if (deps.length() >= 0) {
@@ -124,7 +136,7 @@ public class Generator {
 					previousFragment = fragment;
 
 				} catch (Exception e) {
-					throw new Exception(dir.getCanonicalPath(), e);
+					throw new Exception("fragmentDirName: " + fragmentDirName, e);
 				}
 			}
 
