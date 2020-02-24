@@ -66,7 +66,7 @@ public class Generator {
 		// ----------------------------------------------------------
 		// - List the fragment directories
 		// ----------------------------------------------------------
-		String[] fragmentDirNames = fragmentsDirFile.list(new FilenameFilter() {
+		String[] fragmentNames = fragmentsDirFile.list(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
 				File file = new File(dir, name);
@@ -74,16 +74,8 @@ public class Generator {
 			}
 		});
 
-//		File[] fragmentsDir = fragmentsDirFile.listFiles(new FilenameFilter() {
-//			@Override
-//			public boolean accept(File dir, String name) {
-//				File file = new File(dir, name);
-//				return file.isDirectory();
-//			}
-//		});
-
 		// Check there is at least one fragment directory!
-		if (fragmentDirNames.length <= 0) {
+		if (fragmentNames.length <= 0) {
 			throw new Exception("no fragments found in: " + fragmentsDirName);
 		}
 
@@ -96,8 +88,7 @@ public class Generator {
 		{
 			Fragment previousFragment = new Fragment(0, 0, 0, "");
 
-			// for (File dir : fragmentsDir) {
-			for (String fragmentName : fragmentDirNames) {
+			for (String fragmentName : fragmentNames) {
 				String fragmentDirName = fragmentsDirName + "/" + fragmentName;
 
 				try {
