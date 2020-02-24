@@ -7,13 +7,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.TreeMap;
 
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
-import com.rsmaxwell.diaryjson.Fragment;
-import com.rsmaxwell.diaryjson.Key;
 import com.rsmaxwell.diaryjson.Templates;
+import com.rsmaxwell.diaryjson.fragment.Fragment;
+import com.rsmaxwell.diaryjson.template.DiaryOutput;
+import com.rsmaxwell.diaryjson.template.FragmentList;
 
 public class Generator {
 
@@ -84,7 +84,8 @@ public class Generator {
 		// ----------------------------------------------------------
 		StringBuilder deps = new StringBuilder();
 
-		TreeMap<Key, Fragment> mapOfFragments = new TreeMap<Key, Fragment>();
+		FragmentList fragments = new FragmentList();
+
 		{
 			Fragment previousFragment = new Fragment(0, 0, 0, "");
 
@@ -95,12 +96,10 @@ public class Generator {
 					// ----------------------------------------------------------
 					// - Read the fragment from file and add to the list
 					// ----------------------------------------------------------
-					File fragmentDir = new File(fragmentDirName);
-					Fragment fragment = Fragment.readFromFile(fragmentDir);
+					Fragment fragment = Fragment.readFromFile(fragmentDirName);
 					fragment.check();
 
-					Key key = new Key(fragment.year, fragment.month, fragment.day, fragment.order);
-					mapOfFragments.put(key, fragment);
+					fragments.add(fragment);
 
 					// ----------------------------------------------------------
 					// - Write out the makefile dependencies for next time round
@@ -145,61 +144,40 @@ public class Generator {
 		// (Use an intermediate list to avoid adding to the main
 		// collection as we are traversing it)
 		// -------------------------------------------------------
-		templates.addGeneratedFragments(mapOfFragments);
+		templates.addGeneratedFragments(fragments);
 
 		// ----------------------------------------------------------
 		// Output an HTML and PDF document for each year
 		// ----------------------------------------------------------
-		{
-			Fragment previousFragment = new Fragment(0, 0, 0, "");
+		fragments.generateHtmlAndPdfDocuments(baseUriName, pdfDirName, new DiaryOutput() {
 
-			StringBuilder html = new StringBuilder();
+			@Override
+			public void generate(int year, String html) throws IOException {
 
-			for (Key key : mapOfFragments.keySet()) {
-				Fragment fragment = mapOfFragments.get(key);
+				String diaryName = Integer.toString(year);
+				String diaryHtmlFilename = diaryName + ".html";
+				String diaryPdfFilename = diaryName + ".pdf";
 
-				if (previousFragment.year != fragment.year) {
-					if (html.length() > 0) {
-						generateHtmlAndPdfDocument(previousFragment.year, html.toString());
-					}
+				String diaryHtmlPathName = baseUriName + "/" + diaryHtmlFilename;
+				String diaryPdfPathName = pdfDirName + "/" + diaryPdfFilename;
 
-					html = new StringBuilder();
+				// -------------------------------------------------------
+				// Write out the html document
+				// -------------------------------------------------------
+				File htmlFile = new File(diaryHtmlPathName);
+				Path htmlPath = htmlFile.toPath();
+				try (BufferedWriter writer = Files.newBufferedWriter(htmlPath)) {
+					writer.write(html);
 				}
 
-				html.append(fragment.html);
-				previousFragment = fragment;
+				// -------------------------------------------------------
+				// Convert the html to PDF
+				// -------------------------------------------------------
+				File pdfFile = new File(diaryPdfPathName);
+				ConverterProperties properties = new ConverterProperties();
+				properties.setBaseUri(baseUriName);
+				HtmlConverter.convertToPdf(htmlFile, pdfFile, properties);
 			}
-
-			if (html.length() > 0) {
-				generateHtmlAndPdfDocument(previousFragment.year, html.toString());
-			}
-		}
-	}
-
-	private void generateHtmlAndPdfDocument(int year, String html) throws IOException {
-
-		String diaryName = Integer.toString(year);
-		String diaryHtmlFilename = diaryName + ".html";
-		String diaryPdfFilename = diaryName + ".pdf";
-
-		String diaryHtmlPathName = baseUriName + "/" + diaryHtmlFilename;
-		String diaryPdfPathName = pdfDirName + "/" + diaryPdfFilename;
-
-		// -------------------------------------------------------
-		// Write out the html document
-		// -------------------------------------------------------
-		File htmlFile = new File(diaryHtmlPathName);
-		Path htmlPath = htmlFile.toPath();
-		try (BufferedWriter writer = Files.newBufferedWriter(htmlPath)) {
-			writer.write(html);
-		}
-
-		// -------------------------------------------------------
-		// Convert the html to PDF
-		// -------------------------------------------------------
-		File pdfFile = new File(diaryPdfPathName);
-		ConverterProperties properties = new ConverterProperties();
-		properties.setBaseUri(baseUriName);
-		HtmlConverter.convertToPdf(htmlFile, pdfFile, properties);
+		});
 	}
 }
