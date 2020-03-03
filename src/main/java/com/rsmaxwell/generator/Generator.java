@@ -30,7 +30,7 @@ public class Generator {
 
 	private Templates templates;
 
-	public Generator(String templatesDirName, String outputDirName, String year) throws Exception {
+	public Generator(String url, String templatesDirName, String outputDirName, String year) throws Exception {
 
 		outputDir = new File(outputDirName);
 		outputDir.mkdirs();
@@ -39,7 +39,7 @@ public class Generator {
 		if (!templatesDir.exists()) {
 			throw new Exception("dir not found: " + templatesDir);
 		}
-		templates = new Templates(templatesDirName);
+		templates = new Templates(url, templatesDirName);
 
 		// -------------------------------------------------------
 		// Establish directory names

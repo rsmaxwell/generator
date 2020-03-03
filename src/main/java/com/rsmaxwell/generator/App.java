@@ -32,6 +32,13 @@ public class App {
 				            .desc("set the year")
 				            .build();
 		
+		Option url = Option.builder("u")
+				            .longOpt("url")
+				            .argName("url")
+				            .hasArg()
+				            .desc("set the url of the cgi program")
+				            .build();
+		
 		Option templatesDir = Option.builder("t")
 				            .longOpt("templates")
 				            .argName("templates dir")
@@ -51,6 +58,7 @@ public class App {
 		options.addOption(version);
 		options.addOption(help);
 		options.addOption(year);
+		options.addOption(url);
 		options.addOption(templatesDir);
 		options.addOption(outputDir);
 
@@ -76,6 +84,12 @@ public class App {
 
 		CommandLine line = getCommandLine(args);
 
+		if (!line.hasOption('u')) {
+			System.out.println("Missing required option -u | --url");
+			return;
+		}
+		String url = line.getOptionValue("u", "?");
+
 		if (!line.hasOption('t')) {
 			System.out.println("Missing required option -t | --templates");
 			return;
@@ -94,7 +108,7 @@ public class App {
 		}
 		String year = line.getOptionValue("y");
 
-		Generator generator = new Generator(templatesDirName, outputDirName, year);
+		Generator generator = new Generator(url, templatesDirName, outputDirName, year);
 		generator.toPDF();
 	}
 }
