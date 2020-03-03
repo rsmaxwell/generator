@@ -32,6 +32,8 @@ public class Generator {
 
 	public Generator(String url, String templatesDirName, String outputDirName, String year) throws Exception {
 
+		System.out.println("** Generator: url: " + url);
+
 		outputDir = new File(outputDirName);
 		outputDir.mkdirs();
 
