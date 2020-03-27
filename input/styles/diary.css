@@ -182,3 +182,8 @@ background-color: silver;
 .highlight_black {
 background-color: black;
 }
+
+.underline_double {
+  text-decoration-line: underline;
+  text-decoration-style: double;
+}
