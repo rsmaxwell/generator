@@ -90,11 +90,7 @@ public class App {
 		}
 		String url = line.getOptionValue("u", "?");
 
-		if (!line.hasOption('t')) {
-			System.out.println("Missing required option -t | --templates");
-			return;
-		}
-		String templatesDirName = line.getOptionValue("t", "templates");
+		String templatesDirName = line.getOptionValue("t");
 
 		if (!line.hasOption('o')) {
 			System.out.println("Missing required option -o | --output");

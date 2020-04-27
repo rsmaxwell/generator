@@ -35,11 +35,13 @@ public class Generator {
 		outputDir = new File(outputDirName);
 		outputDir.mkdirs();
 
-		File templatesDir = new File(templatesDirName);
-		if (!templatesDir.exists()) {
-			throw new Exception("dir not found: " + templatesDir);
+		if (templatesDirName != null) {
+			File templatesDir = new File(templatesDirName);
+			if (!templatesDir.exists()) {
+				throw new Exception("dir not found: " + templatesDir);
+			}
+			templates = new Templates(url, templatesDirName);
 		}
-		templates = new Templates(url, templatesDirName);
 
 		// -------------------------------------------------------
 		// Establish directory names
@@ -144,7 +146,9 @@ public class Generator {
 		// (Use an intermediate list to avoid adding to the main
 		// collection as we are traversing it)
 		// -------------------------------------------------------
-		templates.addGeneratedFragments(fragments);
+		if (templates != null) {
+			templates.addGeneratedFragments(fragments);
+		}
 
 		// ----------------------------------------------------------
 		// Output an HTML and PDF document for each year
