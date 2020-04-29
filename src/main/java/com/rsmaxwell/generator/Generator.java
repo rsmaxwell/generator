@@ -6,10 +6,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
-import com.itextpdf.html2pdf.ConverterProperties;
-import com.itextpdf.html2pdf.HtmlConverter;
 import com.rsmaxwell.diaryjson.Templates;
 import com.rsmaxwell.diaryjson.fragment.Fragment;
 import com.rsmaxwell.diaryjson.template.DiaryOutput;
@@ -68,7 +65,7 @@ public class Generator {
 		// ----------------------------------------------------------
 		// - List the fragment directories
 		// ----------------------------------------------------------
-		String[] fragmentNames = fragmentsDirFile.list(new FilenameFilter() {
+		File[] monthDirs = fragmentsDirFile.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
 				File file = new File(dir, name);
@@ -76,67 +73,26 @@ public class Generator {
 			}
 		});
 
-		// Check there is at least one fragment directory!
-		if (fragmentNames.length <= 0) {
-			throw new Exception("no fragments found in: " + fragmentsDirName);
-		}
+		FragmentList allFragments = new FragmentList();
 
-		// ----------------------------------------------------------
-		// - Read the fragments from file
-		// ----------------------------------------------------------
-		StringBuilder deps = new StringBuilder();
+		for (File monthDir : monthDirs) {
 
-		FragmentList fragments = new FragmentList();
+			File[] fragments = monthDir.listFiles(new FilenameFilter() {
+				@Override
+				public boolean accept(File dir, String name) {
+					File file = new File(dir, name);
+					return file.isDirectory();
+				}
+			});
 
-		{
-			Fragment previousFragment = new Fragment(0, 0, 0, "");
-
-			for (String fragmentName : fragmentNames) {
-				String fragmentDirName = fragmentsDirName + "/" + fragmentName;
-
+			for (File fragmentDir : fragments) {
 				try {
-					// ----------------------------------------------------------
-					// - Read the fragment from file and add to the list
-					// ----------------------------------------------------------
-					Fragment fragment = Fragment.readFromFile(fragmentDirName);
+					Fragment fragment = Fragment.readFromFile(fragmentDir.getCanonicalPath());
 					fragment.check();
-
-					fragments.add(fragment);
-
-					// ----------------------------------------------------------
-					// - Write out the makefile dependencies for next time round
-					// ----------------------------------------------------------
-					if ((previousFragment.year == fragment.year)) {
-						deps.append(" ");
-						deps.append(fragmentDirName + "/fragment.json");
-
-					} else {
-						if (deps.length() >= 0) {
-							String diaryName = Integer.toString(previousFragment.year);
-							Path depsPath = Paths.get(depsDirName + "/" + diaryName + ".mk");
-							try (BufferedWriter writer = Files.newBufferedWriter(depsPath)) {
-								writer.write(deps.toString());
-							}
-						}
-
-						String diaryName = Integer.toString(fragment.year);
-						deps = new StringBuilder();
-						deps.append(baseUriName + "/" + diaryName + ".html");
-						deps.append(" :");
-					}
-
-					previousFragment = fragment;
+					allFragments.add(fragment);
 
 				} catch (Exception e) {
-					throw new Exception("fragmentDirName: " + fragmentDirName, e);
-				}
-			}
-
-			if (deps.length() >= 0) {
-				String diaryName = Integer.toString(previousFragment.year);
-				Path depsPath = Paths.get(depsDirName + "/" + diaryName + ".mk");
-				try (BufferedWriter writer = Files.newBufferedWriter(depsPath)) {
-					writer.write(deps.toString());
+					throw new Exception("fragmentDirName: " + fragmentDir.getCanonicalPath(), e);
 				}
 			}
 		}
@@ -147,13 +103,13 @@ public class Generator {
 		// collection as we are traversing it)
 		// -------------------------------------------------------
 		if (templates != null) {
-			templates.addGeneratedFragments(fragments);
+			templates.addGeneratedFragments(allFragments);
 		}
 
 		// ----------------------------------------------------------
-		// Output an HTML and PDF document for each year
+		// Output the HTML document for the year
 		// ----------------------------------------------------------
-		fragments.generateHtmlAndPdfDocuments(baseUriName, pdfDirName, new DiaryOutput() {
+		allFragments.generateHtmlDocuments(baseUriName, pdfDirName, new DiaryOutput() {
 
 			@Override
 			public void generate(int year, String html) throws IOException {
@@ -173,14 +129,6 @@ public class Generator {
 				try (BufferedWriter writer = Files.newBufferedWriter(htmlPath)) {
 					writer.write(html);
 				}
-
-				// -------------------------------------------------------
-				// Convert the html to PDF
-				// -------------------------------------------------------
-				File pdfFile = new File(diaryPdfPathName);
-				ConverterProperties properties = new ConverterProperties();
-				properties.setBaseUri(baseUriName);
-				HtmlConverter.convertToPdf(htmlFile, pdfFile, properties);
 			}
 		});
 	}
