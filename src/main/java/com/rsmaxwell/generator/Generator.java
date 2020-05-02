@@ -16,22 +16,24 @@ public class Generator {
 
 	private String fragmentsDirName;
 	private String baseUriName;
-	private String pdfDirName;
-	private String depsDirName;
 
 	private File fragmentsDirFile;
 	private File outputDir;
 	private File baseUri;
-	private File pdfDirFile;
-	private File depsDirFile;
 
 	private Templates templates;
 
-	public Generator(String url, String templatesDirName, String outputDirName, String year) throws Exception {
+	public Generator(String url, String inputDirName, String outputDirName, String year) throws Exception {
 
-		outputDir = new File(outputDirName);
-		outputDir.mkdirs();
+		// -------------------------------------------------------
+		// Establish the input directory names
+		// -------------------------------------------------------
+		File inputDirFile = new File(inputDirName);
+		if (!inputDirFile.exists()) {
+			throw new Exception("The input director was not found: " + inputDirName);
+		}
 
+		String templatesDirName = inputDirName + "/templates";
 		if (templatesDirName != null) {
 			File templatesDir = new File(templatesDirName);
 			if (!templatesDir.exists()) {
@@ -40,27 +42,24 @@ public class Generator {
 			templates = new Templates(url, templatesDirName);
 		}
 
+		fragmentsDirName = inputDirName + "/fragments" + "/" + year;
+		fragmentsDirFile = new File(fragmentsDirName);
+		if (!fragmentsDirFile.exists()) {
+			throw new Exception("Fragments dir not found: " + fragmentsDirFile.getCanonicalPath());
+		}
+
 		// -------------------------------------------------------
 		// Establish directory names
 		// -------------------------------------------------------
-		fragmentsDirName = outputDirName + "/fragments" + "/" + year;
-		fragmentsDirFile = new File(fragmentsDirName);
-		fragmentsDirFile.mkdirs();
+		outputDir = new File(outputDirName);
+		outputDir.mkdirs();
 
 		baseUriName = outputDirName + "/html";
 		baseUri = new File(baseUriName);
 		baseUri.mkdirs();
-
-		pdfDirName = outputDirName + "/pdf";
-		pdfDirFile = new File(pdfDirName);
-		pdfDirFile.mkdirs();
-
-		depsDirName = outputDirName + "/dependancies";
-		depsDirFile = new File(depsDirName);
-		depsDirFile.mkdirs();
 	}
 
-	public void toPDF() throws Exception {
+	public void toHtml() throws Exception {
 
 		// ----------------------------------------------------------
 		// - List the fragment directories
@@ -109,17 +108,15 @@ public class Generator {
 		// ----------------------------------------------------------
 		// Output the HTML document for the year
 		// ----------------------------------------------------------
-		allFragments.generateHtmlDocuments(baseUriName, pdfDirName, new DiaryOutput() {
+		allFragments.generateHtmlDocuments(baseUriName, new DiaryOutput() {
 
 			@Override
 			public void generate(int year, String html) throws IOException {
 
 				String diaryName = Integer.toString(year);
 				String diaryHtmlFilename = diaryName + ".html";
-				String diaryPdfFilename = diaryName + ".pdf";
 
 				String diaryHtmlPathName = baseUriName + "/" + diaryHtmlFilename;
-				String diaryPdfPathName = pdfDirName + "/" + diaryPdfFilename;
 
 				// -------------------------------------------------------
 				// Write out the html document
