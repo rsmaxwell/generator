@@ -4,7 +4,7 @@ public class Version {
 
 	// version function
 	public static String version() {
-		return "<GENERATOR_VERSION>";
+		return "<VERSION>";
 	}
 
 	// buildDate function
