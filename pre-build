@@ -131,7 +131,7 @@ fi
 #*****************************************************************
 # Replace tags in the source for the Version class
 #*****************************************************************
-VERSION="0.0.$((${BUILD_ID}-2))"
+VERSION="0.0.$((${BUILD_ID}))"
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
     
 find . -name "Version.java" | while read versionfile; do
