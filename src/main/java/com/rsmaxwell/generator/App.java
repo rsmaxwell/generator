@@ -109,6 +109,7 @@ public class App {
 		String year = line.getOptionValue("y");
 
 		Generator generator = new Generator(url, inputDirName, outputDirName, year);
+		generator.summary();
 		generator.toHtml();
 	}
 }

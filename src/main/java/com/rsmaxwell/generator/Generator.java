@@ -129,4 +129,11 @@ public class Generator {
 			}
 		});
 	}
+
+	public void summary() throws IOException {
+		System.out.println("Generator: " + Version.version());
+		System.out.println("diaryjson: " + com.rsmaxwell.diaryjson.Version.version());
+		System.out.println("Reading: " + fragmentsDirFile.getCanonicalPath());
+		System.out.println("Writing: " + baseUri.getCanonicalPath());
+	}
 }
